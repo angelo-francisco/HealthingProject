@@ -4,49 +4,73 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.messages import constants
-
+from django.contrib import auth
 
 def auth_login(request):
-    if request.method == "GET":
-        return render(request, "user_auth/login.html")
-
+    if request.user.is_authenticated:
+        return redirect(reverse('sign_doctor'))
+    
     else:
-        return redirect(reverse("auth_login"))
+        if request.method == "GET":
+            return render(request, "user_auth/login.html")
+
+        else:
+            username = request.POST['username']
+            password = request.POST['senha']
+
+            user = auth.authenticate(request, username=username, password=password)
+
+            if user:
+                auth.login(request, user)
+                return redirect(reverse("auth_login"))
+            
+            messages.add_message(request, constants.ERROR, 'Username ou senha inválidos')
+            return redirect(reverse("auth_login"))
 
 
 def auth_signup(request):
-    if request.method == "GET":
-        return render(request, "user_auth/signup.html")
-
+    if request.user.is_authenticated:
+        return redirect(reverse('sign_doctor    '))
+    
     else:
-        first_name = request.POST["first_name"]
-        last_name = request.POST["last_name"]
-        username = request.POST["username"]
-        email = request.POST["email"]
-        password = request.POST["senha"]
-        password_conf = request.POST["confirmar_senha"]
+        if request.method == "GET":
+            return render(request, "user_auth/signup.html")
 
-        user = User.objects.filter(username=username)
+        else:
+            first_name = request.POST["first_name"]
+            last_name = request.POST["last_name"]
+            username = request.POST["username"]
+            email = request.POST["email"]
+            password = request.POST["senha"]
+            password_conf = request.POST["confirmar_senha"]
 
-        if not user.exists():
-            if password == password_conf:
-                User.objects.create_user(
-                    username=username,
-                    first_name=first_name,
-                    last_name=last_name,
-                    email=email,
-                    password=make_password(password),
-                )
+            user = User.objects.filter(username=username)
 
-                messages.add_message(request, constants.SUCCESS, "Dados Cadastrados!")
-                return redirect(reverse("auth_login"))
+            if not user.exists():
+                if password == password_conf:
+                    User.objects.create_user(
+                        username=username,
+                        first_name=first_name,
+                        last_name=last_name,
+                        email=email,
+                        password=make_password(password),
+                    )
 
-            messages.add_message(request, constants.WARNING, "As senhas não coincidem!")
+                    messages.add_message(request, constants.SUCCESS, "Dados Cadastrados!")
+                    return redirect(reverse("auth_login"))
+
+                messages.add_message(request, constants.WARNING, "As senhas não coincidem!")
+                return redirect(reverse("auth_signup"))
+
+            messages.add_message(request, constants.ERROR, "Username em utilização!")
             return redirect(reverse("auth_signup"))
 
-        messages.add_message(request, constants.ERROR, "Username em utilização!")
-        return redirect(reverse("auth_signup"))
 
 
 def auth_logout(request):
-    pass
+    if request.user.is_authenticated:
+        auth.logout(request)
+        return redirect(reverse('auth_login'))
+    
+    else:
+        return redirect(reverse('sign_doctor'))
