@@ -1,6 +1,6 @@
 from django.urls import path
-from medicine import views
+from medicine.views import *
 
 urlpatterns = [
-    path("auth/", views.auth_doctor, name='auth_doctor'),
+    path("sign_doctor/", auth_doctor, name='auth_doctor'),
 ]

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
 from django.contrib import messages
 from django.contrib.messages import constants
 from django.contrib import auth
+
 
 def auth_login(request):
     if request.user.is_authenticated:
@@ -19,10 +19,9 @@ def auth_login(request):
             password = request.POST['senha']
 
             user = auth.authenticate(request, username=username, password=password)
-
             if user:
                 auth.login(request, user)
-                return redirect(reverse("auth_login"))
+                return redirect(reverse("auth_doctor"))
             
             messages.add_message(request, constants.ERROR, 'Username ou senha inválidos')
             return redirect(reverse("auth_login"))
@@ -30,7 +29,7 @@ def auth_login(request):
 
 def auth_signup(request):
     if request.user.is_authenticated:
-        return redirect(reverse('sign_doctor    '))
+        return redirect(reverse('sign_doctor'))
     
     else:
         if request.method == "GET":
@@ -53,7 +52,7 @@ def auth_signup(request):
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
-                        password=make_password(password),
+                        password=password,
                     )
 
                     messages.add_message(request, constants.SUCCESS, "Dados Cadastrados!")
