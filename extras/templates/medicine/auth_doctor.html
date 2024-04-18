@@ -1,11 +1,11 @@
 {% extends "user_auth/base.html" %}
 {% load static %}
 
-{% block title %}{% endblock %}
+{% block title %}Cadastrar Médico - HealthingProject{% endblock %}
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/user_auth/user_auth.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/medicine/auth_doctor.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-md-8">
             
-            <p class="p-bold">Olá, <span class="color-dark"></span></p>
+            <p class="p-bold">Olá, <span class="color-dark">{{ request.user.first_name }} {{ request.user.last_name }}!</span></p>
             <p class="p-bold">Vamos realizar seu cadastro médico legal.</p>
             {% if messages %}
                 <br>
@@ -27,7 +27,8 @@
                 {% endfor %}
             {% endif %}
             <br>
-            <form action="#" method="post" enctype='multipart/form-data'>
+            <form action="{% url 'auth_doctor' %}" method="post" enctype='multipart/form-data'>
+                {% csrf_token %}
                 <div class="row">
                     <div class="col-md">
                         <label for="">CRM:</label>
@@ -75,11 +76,9 @@
                 <br>
                 <label for="">Especialidade médica</label>
                 <select name="especialidade" class="form-select" id="">
-                   
-                        <option value="">X</option>
-                    
-                   
-
+                    {% for area in areas %}
+                        <option value="{{ area.id }}">{{ area.area }}</option>
+                    {% endfor %}
                 </select>
                 <br>
                 <label for="">Descrição:</label>

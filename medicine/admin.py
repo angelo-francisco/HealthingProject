@@ -1,3 +1,5 @@
 from django.contrib import admin
+from medicine.models import *
 
-# Register your models here.
+admin.site.register(MedicineArea)
+admin.site.register(MedicoData)
