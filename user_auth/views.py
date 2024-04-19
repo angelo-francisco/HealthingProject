@@ -8,7 +8,7 @@ from django.contrib import auth
 
 def auth_login(request):
     if request.user.is_authenticated:
-        return redirect(reverse('sign_doctor'))
+        return redirect(reverse('auth_doctor'))
     
     else:
         if request.method == "GET":
@@ -29,7 +29,7 @@ def auth_login(request):
 
 def auth_signup(request):
     if request.user.is_authenticated:
-        return redirect(reverse('sign_doctor'))
+        return redirect(reverse('auth_doctor'))
     
     else:
         if request.method == "GET":
@@ -72,4 +72,4 @@ def auth_logout(request):
         return redirect(reverse('auth_login'))
     
     else:
-        return redirect(reverse('sign_doctor'))
+        return redirect(reverse('auth_doctor'))

@@ -29,7 +29,17 @@ class MedicoData(models.Model):
         return self.nome_completo
 
 
+class Horarios(models.Model):
+    data = models.DateTimeField()
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    agendada = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user | self.data
+
 # Auxiliary Functions
 def is_medico(user):
     doctor = MedicoData.objects.filter(user=user)
     return doctor.exists()
+
+

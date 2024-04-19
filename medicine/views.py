@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from medicine.models import *
 from django.contrib import messages
 from django.contrib.messages import constants
+import datetime as dt
 
 
 @login_required(login_url='/auth/login/')
@@ -11,7 +12,7 @@ def auth_doctor(request):
 
     if is_medico(request.user):
         messages.add_message(request, constants.ERROR, 'Você já está cadastrado!')
-        return redirect(reverse(' '))
+        return redirect(reverse('horarios'))
     
     else:
         if request.method == "GET":
@@ -56,5 +57,40 @@ def auth_doctor(request):
 
             medico.save()
             
-            messages.add_messages(request, constants.SUCESS, 'Médico cadastrado!')
+            messages.add_message(request, constants.SUCESS, 'Médico cadastrado!')
+            return redirect(reverse('horarios'))
+
+
+@login_required(login_url='/auth/login/')
+def horarios(request):
+    if request.method == "GET":
+        medico = MedicoData.objects.filter(user=request.user)
+        horarios = Horarios.objects.filter(user=request.user)
+        if medico.exists():
+            context = {
+                'medico': medico.first(),
+                'horarios': horarios
+            }   
+            return render(request, 'medicine/horarios.html', context=context)
+        else:
+            messages.add_message(request, constants.ERROR, 'Você não está cadastrado como médico!')
             return redirect(reverse('auth_doctor'))
+    
+    else:
+        data = request.POST['data']
+        
+        formatted_data = dt.datetime.strptime(data, '%Y-%m-%dT%H:%M')
+        actual_data = dt.datetime.now()
+
+        if formatted_data <= actual_data:
+            messages.add_message(request, constants.ERROR, 'Você não pode marcar consultas para agora ou para o passado!')
+            return redirect(reverse('horarios'))
+        
+        else:
+            Horarios.objects.create(
+                data = formatted_data,
+                user = request.user,
+            ).save()
+            
+            messages.add_message(request, constants.SUCCESS, 'Horário adicionado!')
+            return redirect(reverse('horarios'))

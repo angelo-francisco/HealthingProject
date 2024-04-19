@@ -3,4 +3,5 @@ from medicine.views import *
 
 urlpatterns = [
     path("sign_doctor/", auth_doctor, name='auth_doctor'),
+    path("horarios/", horarios, name="horarios")
 ]
