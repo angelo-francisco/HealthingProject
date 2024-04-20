@@ -8,29 +8,31 @@ from django.contrib import auth
 
 def auth_login(request):
     if request.user.is_authenticated:
-        return redirect(reverse('auth_doctor'))
-    
+        return redirect(reverse("auth_doctor"))
+
     else:
         if request.method == "GET":
             return render(request, "user_auth/login.html")
 
         else:
-            username = request.POST['username']
-            password = request.POST['senha']
+            username = request.POST["username"]
+            password = request.POST["senha"]
 
             user = auth.authenticate(request, username=username, password=password)
             if user:
                 auth.login(request, user)
                 return redirect(reverse("auth_doctor"))
-            
-            messages.add_message(request, constants.ERROR, 'Username ou senha inválidos')
+
+            messages.add_message(
+                request, constants.ERROR, "Username ou senha inválidos"
+            )
             return redirect(reverse("auth_login"))
 
 
 def auth_signup(request):
     if request.user.is_authenticated:
-        return redirect(reverse('auth_doctor'))
-    
+        return redirect(reverse("auth_doctor"))
+
     else:
         if request.method == "GET":
             return render(request, "user_auth/signup.html")
@@ -55,21 +57,24 @@ def auth_signup(request):
                         password=password,
                     )
 
-                    messages.add_message(request, constants.SUCCESS, "Dados Cadastrados!")
+                    messages.add_message(
+                        request, constants.SUCCESS, "Dados Cadastrados!"
+                    )
                     return redirect(reverse("auth_login"))
 
-                messages.add_message(request, constants.WARNING, "As senhas não coincidem!")
+                messages.add_message(
+                    request, constants.WARNING, "As senhas não coincidem!"
+                )
                 return redirect(reverse("auth_signup"))
 
             messages.add_message(request, constants.ERROR, "Username em utilização!")
             return redirect(reverse("auth_signup"))
 
 
-
 def auth_logout(request):
     if request.user.is_authenticated:
         auth.logout(request)
-        return redirect(reverse('auth_login'))
-    
+        return redirect(reverse("auth_login"))
+
     else:
-        return redirect(reverse('auth_doctor'))
+        return redirect(reverse("auth_doctor"))
