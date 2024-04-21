@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 import datetime as dt
 
-
 class MedicineArea(models.Model):
     area = models.CharField(max_length=100)
 
@@ -53,3 +52,4 @@ class Horarios(models.Model):
 def is_medico(user):
     doctor = MedicoData.objects.filter(user=user)
     return doctor.exists()
+

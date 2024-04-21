@@ -10,4 +10,5 @@ urlpatterns = [
         "agendar_consulta/<int:id_consulta>", agendar_consulta, name="agendar_consulta"
     ),
     path("consultas/", patient_consultas, name="patient_consultas"),
+    path('ver_consultas/<int:id_consulta>', ver_consultas, name="ver_consulta")
 ]

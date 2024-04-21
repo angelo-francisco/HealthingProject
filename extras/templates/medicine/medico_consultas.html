@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block content %}
-
+{% include "partials/navbar.html" %}
     <div class="container">
         <br>
         {% if messages %}
@@ -57,7 +57,7 @@
                 <tbody>
                     {% for consulta in consultas_hoje  %}
                         <tr>
-                            <td><a href="">{{consulta.patient}}</a></td>
+                            <td><a href="{% url 'medico_consultas2' consulta.id %}">{{consulta.patient}}</a></td>
                             <td>{{consulta.status }}</td>
                             <td>{{consulta.horario.data}}</td>
                         </tr>
@@ -83,7 +83,7 @@
                 <tbody>
                     {% for consulta in consultas_restantes  %}
                         <tr>
-                            <td><a href="">{{consulta.patient}}</a></td>
+                            <td><a href="{% url 'medico_consultas2' consulta.id %}">{{consulta.patient}}</a></td>
                             <td>{{consulta.status}}</td>
                             <td>{{consulta.horario.data}}</td>
                         </tr>

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from medicine.models import *
 from django.contrib.auth.decorators import login_required
-from patient.models import Consulta
+from patient.models import Consulta, Documento
 from django.contrib import messages
 from django.contrib.messages import constants
 
@@ -14,7 +14,7 @@ def patient_home(request):
 
     if request.method == "GET":
         return render(
-            request, "patient/patient_home.html", {"medicos": medicos, "areas": areas}
+            request, "patient/patient_home.html", {"medicos": medicos, "areas": areas, 'is_medico': is_medico(request.user)}
         )
 
     else:
@@ -27,7 +27,7 @@ def patient_home(request):
             medicos = medicos.filter(area_id__in=all_areas)
         # TODO: implementar lógica dos lembretes
         return render(
-            request, "patient/patient_home.html", {"medicos": medicos, "areas": areas}
+            request, "patient/patient_home.html", {"medicos": medicos, "areas": areas, 'is_medico': is_medico(request.user)}
         )
 
 
@@ -35,15 +35,13 @@ def patient_home(request):
 def escolher_horario(request, id_medico):
     if request.method == "GET":
         medico = MedicoData.objects.get(id=id_medico)
-        datas = (
-            Horarios.objects.filter(user=request.user)
-            .filter(data__gte=dt.datetime.now())
-            .filter(agendada=False)
-        )
+        datas = Horarios.objects.filter(user=medico.user).filter(data__gte=dt.datetime.now()).filter(agendada=False)
+        
+        print(datas)
         return render(
             request,
             "patient/escolher_horario.html",
-            context={"medico": medico, "datas": datas},
+            context={"medico": medico, "datas": datas, 'is_medico': is_medico(request.user)},
         )
 
     else:
@@ -74,9 +72,18 @@ def patient_consultas(request):
             horario__data__gte=dt.datetime.now()
         )
         return render(
-            request, "patient/patient_consultas.html", {"consultas": consultas}
+            request, "patient/patient_consultas.html", {"consultas": consultas, 'is_medico': is_medico(request.user)}
         )
 
     else:
         # TODO: lógica do filtro de pesquisa
         return redirect(reverse("patient_consultas"))
+
+
+@login_required(login_url="/auth/login/")
+def ver_consultas(request, id_consulta):
+    if request.method == "GET":
+        consultas = Consulta.objects.get(id=id_consulta)
+        dados_medico = MedicoData.objects.get(user=consultas.horario.user)
+        documentos = Documento.objects.filter(consulta=consultas)
+        return render(request, 'patient/ver_consultas.html', {'consultas': consultas, 'medico': dados_medico, 'documentos': documentos,'is_medico': is_medico(request.user)})
