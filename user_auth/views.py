@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.messages import constants
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 
 def auth_login(request):
@@ -78,3 +79,9 @@ def auth_logout(request):
 
     else:
         return redirect(reverse("auth_doctor"))
+
+
+@login_required(login_url='/auth/login')
+def my_account(request):
+    if request.method == "GET":
+         
