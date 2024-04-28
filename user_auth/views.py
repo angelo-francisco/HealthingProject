@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.messages import constants
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
+from medicine.models import is_medico, MedicoData
 
 
 def auth_login(request):
@@ -84,4 +85,5 @@ def auth_logout(request):
 @login_required(login_url='/auth/login')
 def my_account(request):
     if request.method == "GET":
-         
+        medico = MedicoData.objects.filter(user=request.user).first()
+        return render(request, "user_auth/my_account.html", {'is_medico': is_medico(request.user), 'medico': medico})
